@@ -1014,14 +1014,22 @@ export class NativeHostMainService extends Disposable implements INativeHostMain
 		const paths: string[] = [];
 
 		if (isWindows) {
+			this.logService.info(`[readClipboardFilePaths] available formats: ${JSON.stringify(clipboard.availableFormats())}`);
+
 			const buffer = clipboard.readBuffer('CF_HDROP');
+			this.logService.info(`[readClipboardFilePaths] CF_HDROP buffer length: ${buffer.length}`);
 			if (buffer.length === 0) {
 				return [];
 			}
 
 			const pFilesOffset = buffer.readUInt32LE(0);
+			this.logService.info(`[readClipboardFilePaths] pFilesOffset: ${pFilesOffset}`);
+
 			const namesString = buffer.subarray(pFilesOffset).toString('ucs2');
+			this.logService.info(`[readClipboardFilePaths] decoded: ${JSON.stringify(namesString)}`);
+
 			const rawPaths = namesString.split('\0').filter(p => p.length > 0);
+			this.logService.info(`[readClipboardFilePaths] rawPaths: ${JSON.stringify(rawPaths)}`);
 
 			for (const rawPath of rawPaths) {
 				try {
